@@ -1,3 +1,7 @@
 #pragma once
 
+#include "text.h"
 
+namespace kinetic {
+
+}
