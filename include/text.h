@@ -4,6 +4,8 @@
 #include <memory>
 #include <string>
 
+namespace kinetic {
+
 enum class TextEncoding {
   Utf8,
   Windows1252,
@@ -142,3 +144,5 @@ class Text {
       ignore_case);
   }
 };
+
+}
