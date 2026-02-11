@@ -1,0 +1,5 @@
+[package]
+name = "kinetic"
+version = "0.1.0"
+authors = ["77xt <77xt@proton.me>"]
+edition = "20"
