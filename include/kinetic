@@ -1,5 +1,7 @@
 #pragma once
 
+#include "type.h"
+#include "slice.h"
 #include "text.h"
 
 namespace kinetic {

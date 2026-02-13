@@ -4,6 +4,8 @@
 #include <memory>
 #include <string>
 
+#include "slice.h"
+
 namespace kinetic {
 
 enum class TextEncoding {
@@ -11,67 +13,35 @@ enum class TextEncoding {
   Windows1252,
 };
 
-class StringSlice {
+class StringSlice : public kinetic::Slice<char> {
 private:
-  std::shared_ptr<std::string> _source;
+  static std::vector<char> vec_from_str(const std::string & input) {
+    std::vector<char> result; // Todo: avoid copy?
 
-  size_t _l;
+    for (const char it : input) {
+      result.push_back(it);
+    }
 
-  size_t _r;
+    result.push_back('\0');
+
+    return result;
+  }
   
 public:
   StringSlice(std::string input)
-    : _source(std::make_shared<std::string>(input))
-    , _l(0)
-    , _r(input.length())
+    : kinetic::Slice<char>(std::make_shared<std::vector<char>>(vec_from_str(input)))
   {}
-
-  StringSlice(const StringSlice & other)
-    : _source(other._source)
-    , _l(other._l)
-    , _r(other._r)
-  {}
-
-  size_t get_l() const {
-    return _l;
-  }
-
-  size_t get_r() const {
-    return _r;
-  }
-
-  size_t get_length() const {
-    if (!check_bounds()) {
-      return 0;
-    }
-
-    return _r - _l;
-  }
-
-  bool check_bounds() const {
-    if (_l > _r) {
-      return false;
-    }
-    
-    const auto len = _source.get()->length();
-    
-    if (_l >= len) {
-      return false;   
-    }
-
-    if (_r >= len) {
-      return false;
-    }
-
-    return true;
-  }
+  
+  StringSlice(const kinetic::Slice<char> &slice)
+    : kinetic::Slice<char>(slice)
+  {}  
 
   const char * c_str() const {
-    if (!check_bounds()) {
+    if (get_start() >= get_source_len()) {
       return nullptr;
     }
 
-    return &_source.get()->c_str()[_l];
+    return &get_source()->data()[sizeof(char) * this->get_start()];
   }
 };
 
@@ -83,7 +53,7 @@ class Text {
   static char to_upper(const char input) {
     return std::toupper(input);
   }
-  
+
   static bool eq(
     const char   * left,
     const char   * right,
@@ -113,13 +83,13 @@ class Text {
       for (size_t x = 0; x < len_left; x++) {
         if (left[x] != right[x]) {
           return false;
-        } 
+        }
       }
     }
 
     return true;
   }
-  
+
   static bool eq(
     const StringSlice & left,
     const StringSlice & right,
@@ -127,7 +97,7 @@ class Text {
   ) {
     const char * c_left  = left.c_str();
     const char * c_right = right.c_str();
-    
+
     if (c_left == nullptr) {
       return false;
     }
@@ -139,8 +109,8 @@ class Text {
     return eq(
       c_left,
       c_right,
-      left.get_length(),
-      right.get_length(),
+      left.get_len(),
+      right.get_len(),
       ignore_case);
   }
 };
