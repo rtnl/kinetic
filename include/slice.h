@@ -63,16 +63,16 @@ public:
     return true;
   }
 
-  constexpr T& operator[](const size_t index) const {
-    return _source.get()[_start + index];
+  const T& operator[](const size_t index) const {
+    return (*_source)[_start + index];
   }
 
   const T& at(const size_t index) const {
     if ((_start + index) >= get_source_len()) {
-      return std::out_of_range("Slice::at out of range");
+      throw std::out_of_range("Slice::at out of range");
     }
 
-    return _source.get()[index];
+    return (*_source)[_start + index]; 
   }
 
   template <typename S>
@@ -83,6 +83,34 @@ public:
   template <typename S>
   S pull_offset(const size_t start, const size_t len) const {
     return pull<S>(_start + start, _len + len);
+  }
+
+  bool has_prefix(const Slice<T> & other) const {
+    if (other.get_len() >= get_len()) {
+      return false;
+    }
+
+    for (size_t x = 0; x < other.get_len(); x++) {
+      if (at(x) != other.at(x)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  bool has_suffix(const Slice<T> & other) const {
+    if ((get_start() + other.get_len()) >= get_source_len()) {
+      return false;
+    }
+
+    for (size_t x = 0; x < other.get_len(); x++) {
+      if (at(get_start() + get_len() - other.get_len() + x) != other.at(x)) {
+        return false;
+      }
+    }
+
+    return true;
   }
 };
 

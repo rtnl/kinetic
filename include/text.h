@@ -22,8 +22,6 @@ private:
       result.push_back(it);
     }
 
-    result.push_back('\0');
-
     return result;
   }
   
@@ -34,7 +32,7 @@ public:
   
   StringSlice(const kinetic::Slice<char> &slice)
     : kinetic::Slice<char>(slice)
-  {}  
+  {}
 
   const char * c_str() const {
     if (get_start() >= get_source_len()) {
