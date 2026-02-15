@@ -3,6 +3,7 @@
 #include "type.h"
 #include "slice.h"
 #include "text.h"
+#include "parser.h"
 
 namespace kinetic {
 
