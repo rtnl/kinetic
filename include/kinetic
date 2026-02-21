@@ -4,6 +4,7 @@
 #include "slice.h"
 #include "text.h"
 #include "parser.h"
+#include "date.h"
 
 namespace kinetic {
 
