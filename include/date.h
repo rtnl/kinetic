@@ -48,13 +48,13 @@ public:
     , _millisecond(millisecond)
   {}
 
-  KINETIC_GETTER(u64, _year, year)
-  KINETIC_GETTER(u64, _month, month)
-  KINETIC_GETTER(u64, _day, day)
-  KINETIC_GETTER(u64, _hour, hour)
-  KINETIC_GETTER(u64, _minute, minute)
-  KINETIC_GETTER(u64, _second, second)
-  KINETIC_GETTER(u64, _millisecond, millisecond)
+  KINETIC_GETTER(_year, year)
+  KINETIC_GETTER(_month, month)
+  KINETIC_GETTER(_day, day)
+  KINETIC_GETTER(_hour, hour)
+  KINETIC_GETTER(_minute, minute)
+  KINETIC_GETTER(_second, second)
+  KINETIC_GETTER(_millisecond, millisecond)
 
   DateRecord operator+(const DateRecord & other) const {
     return DateRecord(
