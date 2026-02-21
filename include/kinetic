@@ -1,5 +1,6 @@
 #pragma once
 
+#include "meta.h"
 #include "type.h"
 #include "slice.h"
 #include "text.h"

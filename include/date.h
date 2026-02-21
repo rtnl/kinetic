@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <sstream>
 
+#include "meta.h"
 #include "type.h"
 #include "timezone.h"
 
@@ -47,33 +48,13 @@ public:
     , _millisecond(millisecond)
   {}
 
-  u64 get_year() const {
-    return _year;
-  }
-
-  u64 get_month() const {
-    return _month;
-  }
-
-  u64 get_day() const {
-    return _day;
-  }
-
-  u64 get_hour() const {
-    return _hour;
-  }
-
-  u64 get_minute() const {
-    return _minute;
-  }
-
-  u64 get_second() const {
-    return _second;
-  }
-
-  u64 get_millisecond() const {
-    return _millisecond;
-  }
+  KINETIC_GETTER(u64, _year, year)
+  KINETIC_GETTER(u64, _month, month)
+  KINETIC_GETTER(u64, _day, day)
+  KINETIC_GETTER(u64, _hour, hour)
+  KINETIC_GETTER(u64, _minute, minute)
+  KINETIC_GETTER(u64, _second, second)
+  KINETIC_GETTER(u64, _millisecond, millisecond)
 
   DateRecord operator+(const DateRecord & other) const {
     return DateRecord(
