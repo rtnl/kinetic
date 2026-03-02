@@ -63,6 +63,10 @@ private:
   {}
 
 public:
+  static Uuid new_nil() {
+    return Uuid(UuidVersion::None, 0, 0);
+  }
+
   static Uuid new_v4() {
     std::random_device rd;
     std::mt19937_64 gen(rd());
