@@ -3,6 +3,7 @@
 #include "meta.h"
 #include "type.h"
 #include "uuid.h"
+#include "tree.h"
 #include "unit.h"
 #include "error.h"
 #include "either.h"
