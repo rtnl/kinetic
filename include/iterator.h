@@ -6,7 +6,7 @@
 #include "option.h"
 
 namespace kinetic {
-
+// Todo: make streams?
 template <typename T>
 class Iterator { // Todo: implement c++ iterator?
 public:

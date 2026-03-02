@@ -22,10 +22,12 @@ public:
   Either(A l)
     : _kind(EitherKind::Left)
     , _l(l)
+    , _r(B())
   {}
 
   Either(B r)
     : _kind(EitherKind::Right)
+    , _l(A())
     , _r(r)
   {}
 

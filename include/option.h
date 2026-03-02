@@ -1,8 +1,9 @@
 #pragma once
 
+#include <stdexcept>
+
 #include "unit.h"
 #include "either.h"
-#include <stdexcept>
 
 namespace kinetic {
 
