@@ -2,6 +2,7 @@
 
 #include <cctype>
 #include <memory>
+#include <stdexcept>
 #include <string>
 
 #include "slice.h"
@@ -24,12 +25,12 @@ private:
 
     return result;
   }
-  
+
 public:
   StringSlice(std::string input)
     : kinetic::Slice<char>(std::make_shared<std::vector<char>>(vec_from_str(input)))
   {}
-  
+
   StringSlice(const kinetic::Slice<char> &slice)
     : kinetic::Slice<char>(slice)
   {}
@@ -40,6 +41,16 @@ public:
     }
 
     return &get_source()->data()[sizeof(char) * this->get_start()];
+  }
+
+  std::string to_string() const {
+    if (!check()) {
+      throw std::logic_error("invalid StringSlice bounds");
+    }
+
+    std::string result(c_str(), get_len());
+
+    return result;
   }
 };
 

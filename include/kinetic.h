@@ -15,6 +15,7 @@
 #include "parser.h"
 #include "date.h"
 #include "program.h"
+#include "http.h"
 
 namespace kinetic {
   static const std::string CommitHashRaw = KINETIC_STR(CABIN_KINETIC_COMMIT_HASH);
