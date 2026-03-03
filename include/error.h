@@ -11,6 +11,7 @@ enum class ErrorKind {
   None,
   ValueNull,
   ValueNotInitialized,
+  ValueNotAvailable,
 };
 
 class Error {

@@ -4,9 +4,7 @@
 #include <type_traits>
 
 #include "meta.h"
-#include "unit.h"
 #include "error.h"
-#include "option.h"
 #include "result.h"
 #include "iterator.h"
 
@@ -15,6 +13,8 @@ namespace kinetic {
 template <typename I, typename R>
 class ParserState {
 public:
+  virtual ~ParserState() = default;
+
   virtual kinetic::Result<std::shared_ptr<R>> apply(std::shared_ptr<R> state, const I & input) = 0;
 };
 
@@ -52,14 +52,20 @@ public:
       return false;
     }
 
-    if (!_iter.get()->has_next()) {
+    if (!_iter->has_next()) {
       _result = Result<std::shared_ptr<R>>::ok(_value);
       return false;
     }
 
-    const I element = _iter.get()->get_next().unwrap();
+    const kinetic::Result<I> element_r = _iter->get_next();
+    if (element_r.is_err()) {
+      _result = Result<std::shared_ptr<R>>::err(Error(ErrorKind::ValueNotAvailable, "failed to get next item from iterator: " + element_r.get_error()));
+      return false;
+    }
 
-    Result<std::shared_ptr<R>> value_result = _state.get()->apply(_value, element);
+    const I element = element_r.unwrap();
+
+    Result<std::shared_ptr<R>> value_result = _state->apply(_value, element);
     if (value_result.is_err()) {
       _result = value_result;
       return false;
