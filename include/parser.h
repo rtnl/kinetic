@@ -53,16 +53,9 @@ public:
       return false;
     }
 
-    if (!_iter->has_next()) {
-      _result = Result<std::shared_ptr<R>>::ok(_value);
-      return false;
-    }
-
     const kinetic::Option<I> element_r = _iter->get_next();
     if (element_r.is_none()) {
-      _result = Result<std::shared_ptr<R>>::err(Error(
-        ErrorKind::ValueNotAvailable,
-        "failed to get next item from Iterator"));
+      _result = Result<std::shared_ptr<R>>::ok(_value);
       return false;
     }
 
