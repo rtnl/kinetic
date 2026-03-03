@@ -5,6 +5,7 @@
 
 #include "meta.h"
 #include "error.h"
+#include "option.h"
 #include "result.h"
 #include "iterator.h"
 
@@ -15,7 +16,7 @@ class ParserState {
 public:
   virtual ~ParserState() = default;
 
-  virtual kinetic::Result<std::shared_ptr<R>> apply(std::shared_ptr<R> state, const I & input) = 0;
+  virtual kinetic::Result<std::shared_ptr<R>> apply(const std::shared_ptr<R> & state, const I & input) = 0;
 };
 
 template <typename I, typename R, typename S>
@@ -36,8 +37,8 @@ private:
 public:
   Parser(std::shared_ptr<kinetic::Iterator<I>> iter, std::shared_ptr<S> state, std::shared_ptr<R> init)
     : _iter(std::move(iter))
-    , _state(state)
-    , _value(init)
+    , _state(std::move(state))
+    , _value(std::move(init))
     , _result(Result<std::shared_ptr<R>>::err(Error(ErrorKind::ValueNotInitialized, "Parser did not step")))
     , _count(0)
   {}
@@ -57,9 +58,11 @@ public:
       return false;
     }
 
-    const kinetic::Result<I> element_r = _iter->get_next();
-    if (element_r.is_err()) {
-      _result = Result<std::shared_ptr<R>>::err(Error(ErrorKind::ValueNotAvailable, "failed to get next item from iterator: " + element_r.get_error()));
+    const kinetic::Option<I> element_r = _iter->get_next();
+    if (element_r.is_none()) {
+      _result = Result<std::shared_ptr<R>>::err(Error(
+        ErrorKind::ValueNotAvailable,
+        "failed to get next item from Iterator"));
       return false;
     }
 
@@ -72,12 +75,13 @@ public:
     }
 
     _value = value_result.unwrap();
+    _count++;
+
     return true;
   }
 
   kinetic::Result<std::shared_ptr<R>> run() {
     while (step()) {
-      _count++;
     }
 
     return get_result();
