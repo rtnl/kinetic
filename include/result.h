@@ -45,7 +45,7 @@ public:
 
   T unwrap() const {
     if (is_err()) {
-      throw std::logic_error("Result is Error");
+      throw std::logic_error("Result is Error: " + get_error().formatted());
     }
 
     return _inner.get_r();

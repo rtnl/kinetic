@@ -2,6 +2,7 @@
 
 #include <string>
 #include <utility>
+#include <sstream>
 
 #include "meta.h"
 
@@ -12,6 +13,8 @@ enum class ErrorKind {
   ValueNull,
   ValueNotInitialized,
   ValueNotAvailable,
+  ValueInvalid,
+  ValueEnded,
 };
 
 class Error {
@@ -34,6 +37,20 @@ public:
   KINETIC_GETTER(_kind, kind)
 
   KINETIC_GETTER(_message, message)
+
+  std::string formatted() const {
+    std::ostringstream ss;
+
+    ss
+      << "Error"
+      << "("
+      << int(get_kind())
+      << "|"
+      << get_message()
+      << ")";
+
+    return ss.str();
+  }
 };
 
 }
