@@ -8,8 +8,6 @@
 #include "type.h"
 #include "option.h"
 
-#include <iostream>
-
 namespace kinetic {
 // Todo: make streams?
 
@@ -57,7 +55,7 @@ public:
 
 class FileIterator : public Iterator<u8> {
 private:
-  static constexpr size_t _BUF_SIZE = 512;
+  static constexpr size_t _BUF_SIZE = 4096;
 
   std::string _path;
 
