@@ -8,4 +8,4 @@
   auto get_##name() const -> decltype(field) { return field; }
 
 #define KINETIC_SETTER(type, field, name) \
-  void set_##name(type) { field = name; }
+  void set_##name(type input) { field = input; }
