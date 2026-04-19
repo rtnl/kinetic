@@ -13,6 +13,7 @@
 #include "text.h"
 #include "iterator.h"
 #include "utf8.h"
+#include "node.h"
 #include "parser.h"
 #include "date.h"
 #include "program.h"
