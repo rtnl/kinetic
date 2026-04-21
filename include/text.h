@@ -63,6 +63,30 @@ class Text {
     return std::toupper(input);
   }
 
+  static std::string to_lower(const std::string & input) {
+    std::string result;
+
+    result.reserve(input.length());
+
+    for (const char it : input) {
+      result.push_back(to_lower(it));
+    }
+
+    return result;
+  }
+
+  static std::string to_upper(const std::string & input) {
+    std::string result;
+
+    result.reserve(input.length());
+
+    for (const char it : input) {
+      result.push_back(to_upper(it));
+
+      return result;
+    }
+  }
+
   static bool eq(
     const char   * left,
     const char   * right,
