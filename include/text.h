@@ -55,6 +55,7 @@ public:
 };
 
 class Text {
+public:
   static char to_lower(const char input) {
     return std::tolower(input);
   }
