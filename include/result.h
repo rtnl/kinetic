@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdexcept>
+#include <string>
 
 #include "error.h"
 #include "either.h"
@@ -25,6 +26,10 @@ public:
 
   static Result err(Error error) {
     return Result(Inner(error));
+  }
+
+  static Result err(ErrorKind error_kind, const std::string & error_msg) {
+    return Result(Inner(Error(error_kind, error_msg)));
   }
 
   bool is_ok() const {

@@ -3,7 +3,9 @@
 #include "meta.h"
 #include "option.h"
 
+#include <functional>
 #include <memory>
+#include <stdexcept>
 #include <vector>
 
 namespace kinetic {
@@ -25,34 +27,58 @@ private:
   std::vector<size_t> _node_child_list;
 
 public:
-  NodeArenaCell(Option<size_t> node_parent)
+  NodeArenaCell()
     : _state(NodeArenaCellState::Ready)
     , _value(nullptr)
-    , _node_parent(node_parent)
+    , _node_parent(Option<size_t>::none())
     , _node_child_list()
   {}
 
   KINETIC_GETTER(_state, state)
 
   Option<const T &> get() const {
-    return *_value;
-  }
+    using ResultT = Option<const T &>;
 
-  void clear() {
     switch (get_state()) {
-      case NodeArenaCellState::Ready: {
-        _value = nullptr;
-        break;
-      }
-      default: {
-        break;
-      }
+      case NodeArenaCellState::Ready:
+        return ResultT::none();
+      case NodeArenaCellState::Taken:
+        if (_value == nullptr) {
+          return ResultT::none();
+        }
+
+        return ResultT::some(*_value);
+      default:
+        throw std::runtime_error("unhandled NodeArenaCellState");
     }
   }
 
-  void set(std::shared_ptr<T> value) {
-    clear();
-    _value = value;
+  bool clear() {
+    switch (get_state()) {
+      case NodeArenaCellState::Ready:
+        return false;
+      case NodeArenaCellState::Taken: {
+        _value = nullptr;
+        _state = NodeArenaCellState::Ready;
+        return true;
+      }
+      default:
+        throw std::runtime_error("unhandled NodeArenaCellState");
+    }
+  }
+
+  bool set(std::shared_ptr<T> value) {
+    switch (get_state()) {
+      case NodeArenaCellState::Ready: {
+        _value = value;
+        _state = NodeArenaCellState::Taken;
+        return true;
+      }
+      case NodeArenaCellState::Taken:
+        return false;
+      default:
+        throw std::runtime_error("unhandled NodeArenaCellState");
+    }
   }
 
   KINETIC_SETTER(Option<size_t>, _node_parent, parent)
@@ -66,15 +92,7 @@ public:
   }
 
   void add_child(const size_t node_child) {
-    bool flag_child_present = false;
-
-    for (size_t x = 0; x < _node_child_list.size(); x++) {
-      if (_node_child_list[x] == node_child) {
-        flag_child_present = true;
-        break;
-      }
-    }
-    if (flag_child_present) {
+    if (has_child(node_child)) {
       return;
     }
 
@@ -129,23 +147,24 @@ public:
   size_t create_cell(std::shared_ptr<T> value) {
     const kinetic::Option<size_t> cell_index_ready = find_cell_with_state(NodeArenaCellState::Ready);
     if (cell_index_ready.is_none()) {
-      auto cell = NodeArenaCell<T> (value);
+      auto cell = NodeArenaCell<T>();
+      cell.set(value);
 
       _cells.emplace_back(cell);
 
-      return cell.size() - 1;
+      return _cells.size() - 1;
     } else {
       const size_t cell_index = cell_index_ready.unwrap();
 
       auto & cell = _cells[cell_index];
-
+      cell.clear();
       cell.set(value);
 
       return cell_index;
     }
   }
 
-  bool apply_cell(const size_t index, const void (*fn) (NodeArenaCell<T> & mut_ref)) {
+  bool apply_cell(const size_t index, const std::function<void(NodeArenaCell<T> & mut_ref)> & fn) {
     if (!check_cell_index(index)) {
       return false;
     }
@@ -160,7 +179,7 @@ public:
   }
 
   template <typename R>
-  Option<R> read(const size_t index, const R (*fn) (const NodeArenaCell<T> & ref)) {
+  Option<R> read_cell(const size_t index, const std::function<R(NodeArenaCell<T> & mut_ref)> & fn) {
     if (!check_cell_index(index)) {
       return Option<R>::none();
     }
@@ -180,12 +199,12 @@ private:
 
   size_t _index;
 
-  bool apply(const void (*fn) (NodeArenaCell<T> & cell)) {
-    _arena->apply_cell(_index, fn);
+  bool apply(const std::function<void(NodeArenaCell<T> & cell)> & fn) {
+    return _arena->apply_cell(_index, fn);
   }
 
   template <typename R>
-  Option<R> read(const R (*fn) (const NodeArenaCell<T> & cell)) {
+  Option<R> read(const std::function<R(NodeArenaCell<T> & cell)> & fn) {
     return _arena.read_cell(_index, fn);
   }
 
@@ -197,23 +216,23 @@ public:
 
   KINETIC_GETTER(_index, index)
 
-  static Node<T> create(std::shared_ptr<NodeArena<T>> arena, std::shared_ptr<T> value) {
-    const auto index = arena->create_cell(value);
-
-    auto node = Node<T>(arena, index);
-
-    return node;
+  static Node<T> of(std::shared_ptr<NodeArena<T>> arena, size_t index) {
+    return Node<T>(arena, index);
   }
 
-  const T & get() const {
+  static Node<T> create(std::shared_ptr<NodeArena<T>> arena, std::shared_ptr<T> value) {
+    return Node<T>::of(arena, arena->create_cell(value));
+  }
+
+  Option<const T &> get() const {
     return read<const T &>([](const NodeArenaCell<T> & cell) -> const T & {
       return cell.get();
     });
   }
 
-  void set_parent(const Node<T> & node_parent) {
-    apply([node_parent](NodeArenaCell<T> & cell) -> void {
-      cell->set_parent(Option<size_t>::some(node_parent.get_index()));
+  void set_parent(const size_t node_parent_index) {
+    apply([node_parent_index](NodeArenaCell<T> & cell) -> void {
+      cell.set_parent(Option<size_t>::some(node_parent_index));
     });
   }
 
@@ -223,23 +242,24 @@ public:
     });
   }
 
-  Node<T> add_child(std::shared_ptr<T> value) {
+  Node<T> create_child(std::shared_ptr<T> value) {
     auto node = create(_arena, value);
-
-    node.set_parent(this);
+    node.set_parent(get_index());
 
     const auto node_index = node.get_index();
 
     apply([node_index](NodeArenaCell<T> & cell) -> void {
-      cell->add_child(node_index);
+      cell.add_child(node_index);
+      return;
     });
+
+    return node;
   }
 
   Option<Node<T>> get_child_abs(const size_t index) {
     using ResultT = Option<Node<T>>;
 
     bool flag_child_exists = false;
-
     apply([index, flag_child_exists](NodeArenaCell<T> & cell) -> void {
       flag_child_exists = cell.has_child();
     });
@@ -255,7 +275,6 @@ public:
     using ResultT = Option<Node<T>>;
 
     auto child = Option<size_t>::none();
-
     apply([index, child](NodeArenaCell<T> & cell) -> void {
       child = cell.get_child(index);
     });
@@ -264,13 +283,14 @@ public:
       return ResultT::none();
     }
 
-    const auto child_index = child.unwrap();
-
-    return ResultT::some(Node<T>(_arena, child_index));
+    return ResultT::some(Node<T>(_arena, child.unwrap()));
   }
 
   void walk(const void (*fn)(const T & value)) {
-    fn(get());
+    const Option<const T &> value_opt = get();
+    if (value_opt.is_some()) {
+      fn(value_opt.unwrap());
+    }
 
     for (const size_t child_index : list_child()) {
       walk(get_child_abs(child_index).unwrap());
