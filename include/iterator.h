@@ -44,7 +44,7 @@ public:
     return _index < _source.get()->size();
   }
 
-  Option<T> get_next() {
+  Option<T> get_next() override {
     if (!has_next()) {
       return Option<T>::none();
     }
