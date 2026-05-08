@@ -18,7 +18,7 @@
 
 namespace kinetic {
 
-static const size_t READER_BUFLEN = 64;
+static const size_t READER_BUFLEN = 8192;
 
 using R_Size = Result<usize>;
 
