@@ -12,6 +12,7 @@
 #include "slice.h"
 #include "text.h"
 #include "iterator.h"
+#include "reader.h"
 #include "utf8.h"
 #include "node.h"
 #include "parser.h"

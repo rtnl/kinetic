@@ -15,3 +15,5 @@ using i64 = int64_t;
 using c8  = char;
 using c16 = char16_t;
 using c32 = char32_t;
+
+using usize = std::size_t;
