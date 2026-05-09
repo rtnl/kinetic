@@ -3,10 +3,10 @@
 #include "meta.h"
 #include "option.h"
 
-#include <functional>
 #include <memory>
 #include <stdexcept>
 #include <vector>
+#include <functional>
 
 namespace kinetic {
 
@@ -311,7 +311,7 @@ public:
     return ResultT::some(Node<T>(_arena, child.unwrap()));
   }
 
-  void walk(const void (*fn)(const T & value)) const {
+  void walk(const std::function<void (const T &)> & fn) const {
     const Option<const T &> value_opt = get();
     if (value_opt.is_some()) {
       fn(value_opt.unwrap());
