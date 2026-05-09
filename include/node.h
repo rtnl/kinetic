@@ -318,7 +318,7 @@ public:
     }
 
     for (const size_t child_index : list_child()) {
-      walk(get_child_abs(child_index).unwrap());
+      get_child_abs(child_index).unwrap().walk(fn);
     }
   }
 };
