@@ -1,5 +1,6 @@
 #pragma once
 
+#include "type.h"
 #include "meta.h"
 #include "option.h"
 
@@ -36,8 +37,8 @@ public:
 
   KINETIC_GETTER(_state, state)
 
-  Option<const T &> get() const {
-    using ResultT = Option<const T &>;
+  Option<std::shared_ptr<T>> get() const {
+    using ResultT = Option<std::shared_ptr<T>>;
 
     switch (get_state()) {
       case NodeArenaCellState::Ready:
@@ -47,7 +48,7 @@ public:
           return ResultT::none();
         }
 
-        return ResultT::some(*_value);
+        return ResultT::some(_value);
       default:
         throw std::runtime_error("unhandled NodeArenaCellState");
     }
@@ -181,7 +182,7 @@ public:
   }
 
   template <typename R>
-  Option<R> read_cell(const size_t index, const std::function<R(const NodeArenaCell<T> & mut_ref)> & fn) const {
+  Option<R> read_cell(const size_t index, const std::function<R(const NodeArenaCell<T> & ref)> & fn) const {
     if (!check_cell_index(index)) {
       return Option<R>::none();
     }
@@ -231,28 +232,16 @@ public:
     return Node<T>::of(arena, arena->create_cell(value));
   }
 
-  Option<const T &> get() const {
-    return read<const T &>([](const NodeArenaCell<T> & cell) -> const T & {
+  Option<std::shared_ptr<T>> get() const {
+    return read<Option<std::shared_ptr<T>>>(std::function<Option<std::shared_ptr<T>> (const NodeArenaCell<T> &)>([](const NodeArenaCell<T> & cell) -> Option<std::shared_ptr<T>> {
       return cell.get();
-    });
+    })).flatten();
   }
 
   Option<Node<T>> get_parent() const {
-    using ResultT = Option<Node<T>>;
-
-    const auto parent_opt = read<Option<size_t>>([](const NodeArenaCell<T> & cell) -> Option<size_t> {
-      return cell.get_parent();
-    });
-    if (parent_opt.is_none()) {
-      return ResultT::none();
-    }
-
-    const auto parent = parent_opt.unwrap();
-    if (parent.is_none()) {
-      return ResultT::none();
-    }
-
-    return ResultT::some(Node<T>::of(_arena, parent.unwrap()));
+    return read<Option<size_t>>([](const NodeArenaCell<T> & cell) -> Option<size_t> { return cell.get_parent(); })
+      .flatten()
+      .map(std::function<Node<T>(const size_t&)>([this](const size_t & index) -> Node<T> { return Node<T>::of(this->_arena, index); }));
   }
 
   void set_parent(const size_t node_parent_index) const {
@@ -262,9 +251,9 @@ public:
   }
 
   std::vector<size_t> list_child() const {
-    return read([](const NodeArenaCell<T> & cell) -> std::vector<size_t> {
+    return read(std::function<std::vector<size_t> (const NodeArenaCell<T> &)>([](const NodeArenaCell<T> & cell) -> std::vector<size_t> {
       return cell.list_child();
-    });
+    })).unwrap_or(std::vector<size_t> {});
   }
 
   Node<T> create_child(std::shared_ptr<T> value) const {
@@ -285,9 +274,10 @@ public:
     using ResultT = Option<Node<T>>;
 
     bool flag_child_exists = false;
-    apply([index, flag_child_exists](NodeArenaCell<T> & cell) -> void {
-      flag_child_exists = cell.has_child();
-    });
+    read(std::function<u8 (const NodeArenaCell<T> &)>([index, &flag_child_exists](const NodeArenaCell<T> & cell) -> u8 {
+      flag_child_exists = cell.has_child(index);
+      return 0;
+    }));
 
     if (!flag_child_exists) {
       return ResultT::none();
@@ -311,14 +301,14 @@ public:
     return ResultT::some(Node<T>(_arena, child.unwrap()));
   }
 
-  void walk(const std::function<void (const T &)> & fn) const {
-    const Option<const T &> value_opt = get();
+  void walk(const std::function<void (size_t, const T &)> & fn, const size_t level = 0) const {
+    const Option<std::shared_ptr<T>> value_opt = get();
     if (value_opt.is_some()) {
-      fn(value_opt.unwrap());
+      fn(level, *value_opt.unwrap());
     }
 
     for (const size_t child_index : list_child()) {
-      get_child_abs(child_index).unwrap().walk(fn);
+      get_child_abs(child_index).unwrap().walk(fn, level + 1);
     }
   }
 };
