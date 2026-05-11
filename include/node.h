@@ -238,6 +238,26 @@ public:
     })).flatten();
   }
 
+  bool apply(const std::function<void (T &)> & fn) const {
+    bool result = false;
+
+    apply([fn, &result](NodeArenaCell<T> & cell) -> void {
+      const Option<std::shared_ptr<T>> ref_opt = cell.get();
+      if (ref_opt.is_none()) {
+        return;
+      }
+
+      const std::shared_ptr<T> ref = ref_opt.unwrap();
+      if (ref != nullptr) {
+        fn(*ref);
+      }
+
+      result = true;
+    });
+
+    return result;
+  }
+
   Option<Node<T>> get_parent() const {
     return read<Option<size_t>>([](const NodeArenaCell<T> & cell) -> Option<size_t> { return cell.get_parent(); })
       .flatten()
