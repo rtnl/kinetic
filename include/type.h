@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <sys/types.h>
 
 using u8  = uint8_t;
 using u16 = uint16_t;
@@ -17,3 +18,4 @@ using c16 = char16_t;
 using c32 = char32_t;
 
 using usize = std::size_t;
+using ssize = ssize_t;

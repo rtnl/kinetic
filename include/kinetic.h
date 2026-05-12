@@ -13,12 +13,15 @@
 #include "text.h"
 #include "iterator.h"
 #include "reader.h"
+#include "writer.h"
 #include "utf8.h"
 #include "node.h"
 #include "parser.h"
 #include "date.h"
 #include "program.h"
 #include "http.h"
+
+#include <./net/tcp.h>
 
 namespace kinetic {
   static const std::string CommitHashRaw = KINETIC_STR(CABIN_KINETIC_COMMIT_HASH);
