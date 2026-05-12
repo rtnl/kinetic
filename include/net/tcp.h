@@ -10,6 +10,7 @@
 #include <arpa/inet.h>
 #include <string>
 #include <memory>
+#include <type_traits>
 
 namespace kinetic {
 
@@ -94,8 +95,12 @@ public:
     return ResultT::ok({});
   }
 
-  kinetic::Result<std::shared_ptr<TcpStream>> accept_client() {
-    using ResultT = kinetic::Result<std::shared_ptr<TcpStream>>;
+  template <
+    typename S,
+    typename = typename std::enable_if<std::is_base_of<TcpStream, S>::value>::type
+  >
+  kinetic::Result<std::shared_ptr<S>> accept_client() {
+    using ResultT = kinetic::Result<std::shared_ptr<S>>;
 
     sockaddr_in client_addr;
     socklen_t len = sizeof(client_addr);
@@ -105,7 +110,7 @@ public:
       return ResultT::err(ErrorKind::ValueInvalid, "accept() failed");
     }
 
-    return ResultT::ok(std::shared_ptr<TcpStream>(new TcpStream(client_fd)));
+    return ResultT::ok(std::make_shared<S>(client_fd));
   }
 };
 
@@ -124,8 +129,12 @@ public:
     , _client_fd(0)
   {}
 
-  kinetic::Result<std::shared_ptr<TcpStream>> connect() {
-    using ResultT = kinetic::Result<std::shared_ptr<TcpStream>>;
+  template <
+    typename S,
+    typename = typename std::enable_if<std::is_base_of<TcpStream, S>::value>::type
+  >
+  kinetic::Result<std::shared_ptr<S>> connect() {
+    using ResultT = kinetic::Result<std::shared_ptr<S>>;
 
     _client_fd = ::socket(AF_INET, SOCK_STREAM, 0);
     if (_client_fd < 0) {
@@ -143,7 +152,7 @@ public:
       return ResultT::err(ErrorKind::ValueInvalid, "connect() failed");
     }
 
-    return ResultT::ok(std::make_shared<TcpStream>(_client_fd));
+    return ResultT::ok(std::make_shared<S>(_client_fd));
   }
 };
 
