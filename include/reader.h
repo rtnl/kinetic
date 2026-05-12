@@ -2,6 +2,7 @@
 
 #include "type.h"
 #include "meta.h"
+#include "unit.h"
 #include "error.h"
 #include "result.h"
 
@@ -21,6 +22,7 @@ namespace kinetic {
 static const size_t READER_BUFLEN = 8192;
 
 using R_Size = Result<usize>;
+using R_Unit = Result<Unit>;
 
 class Reader {
 public:
@@ -50,6 +52,26 @@ public:
     }
 
     return R_Size::ok(len);
+  }
+
+  R_Unit read_exact(u8 * out, usize size) {
+    usize s_read = 0;
+
+    while (s_read < size) {
+      const auto read_r = read(&out[s_read], size - s_read);
+      if (read_r.is_err()) {
+        return R_Unit::err(read_r.get_error());
+      }
+
+      const usize l = read_r.unwrap();
+      if (l < 1) {
+        return R_Unit::err(kinetic::ErrorKind::ValueInvalid, "read_exact zero read");
+      }
+
+      s_read += l;
+    }
+
+    return R_Unit::ok({});
   }
 };
 
