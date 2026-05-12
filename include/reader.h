@@ -82,6 +82,8 @@ private:
   size_t _buf_len = 0;
 
 public:
+  ~BufReader() = default;
+
   R_Size read_until(u8 value, std::vector<u8> & out) {
     size_t written = 0;
 
@@ -124,6 +126,8 @@ private:
   std::unique_ptr<std::istream> _stream;
 
 public:
+  ~StreamReader() = default;
+
   StreamReader(std::unique_ptr<std::istream> stream) noexcept
     : _stream(std::move(stream))
   {
