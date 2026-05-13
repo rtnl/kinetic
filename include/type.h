@@ -19,3 +19,5 @@ using c32 = char32_t;
 
 using usize = std::size_t;
 using ssize = ssize_t;
+
+using rune = i32; // like Go
