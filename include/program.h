@@ -20,6 +20,3 @@ public:
 };
 
 }
-
-#define KINETIC_ENTRYPOINT(_PROGRAM) \
-  int main(int argc, char **argv) { auto program = _PROGRAM(); program.init(argc, argv); return program.run(); }
