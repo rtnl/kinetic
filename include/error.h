@@ -15,6 +15,7 @@ enum class ErrorKind {
   ValueNotAvailable,
   ValueInvalid,
   ValueEnded,
+  SourceTodo,
 };
 
 class Error {
