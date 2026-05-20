@@ -20,6 +20,7 @@
 #include "date.h"
 #include "program.h"
 #include "http.h"
+#include "test.h"
 
 #include <./net/tcp.h>
 
