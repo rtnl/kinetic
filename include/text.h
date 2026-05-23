@@ -83,9 +83,9 @@ public:
 
     for (const char it : input) {
       result.push_back(to_upper(it));
-
-      return result;
     }
+
+    return result;
   }
 
   static bool eq(
