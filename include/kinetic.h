@@ -3,6 +3,7 @@
 #include "meta.h"
 #include "type.h"
 #include "color.h"
+#include "log.h"
 #include "uuid.h"
 #include "tree.h"
 #include "unit.h"
