@@ -19,13 +19,13 @@ private:
   B _r;
 
 public:
-  Either(A l)
+  explicit Either(const A & l) noexcept
     : _kind(EitherKind::Left)
     , _l(l)
     , _r(B())
   {}
 
-  Either(B r)
+  explicit Either(const B & r) noexcept
     : _kind(EitherKind::Right)
     , _l(A())
     , _r(r)
@@ -45,7 +45,7 @@ public:
     return get_is_kind(EitherKind::Right);
   }
 
-  const A& get_l() const {
+  const A & get_l() const {
     switch (get_kind()) {
       case EitherKind::Left:
         return _l;
@@ -54,7 +54,7 @@ public:
     }
   }
 
-  const B& get_r() const {
+  const B & get_r() const {
     switch (get_kind()) {
       case EitherKind::Right:
         return _r;

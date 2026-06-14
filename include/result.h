@@ -15,20 +15,20 @@ private:
 
   Inner _inner;
 
-  explicit Result(Inner inner)
+  explicit Result(Inner inner) noexcept
     : _inner(std::move(inner))
   {}
 
 public:
-  static Result ok(T value) {
-    return Result(Inner(value));
+  static Result ok(const T & value) noexcept {
+    return Result(Inner(std::move(value)));
   }
 
-  static Result err(Error error) {
+  static Result err(Error error) noexcept {
     return Result(Inner(error));
   }
 
-  static Result err(ErrorKind error_kind, const std::string & error_msg) {
+  static Result err(ErrorKind error_kind, const std::string & error_msg) noexcept {
     return Result(Inner(Error(error_kind, error_msg)));
   }
 
@@ -48,7 +48,7 @@ public:
     }
   }
 
-  T unwrap() const {
+  const T & unwrap() const {
     if (is_err()) {
       throw std::logic_error("Result is Error: " + get_error().formatted());
     }
