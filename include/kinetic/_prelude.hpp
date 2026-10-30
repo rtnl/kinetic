@@ -40,3 +40,9 @@ using usize = std::size_t;
 using ssize = ssize_t;
 
 using rune = i32; // like Go
+
+#define __KINETIC_CONCAT(a, b) a##b
+
+#define KINETIC_CONCAT(a, b) __KINETIC_CONCAT(a, b)
+
+#define KINETIC_STR(v) #v
