@@ -11,6 +11,7 @@ enum class ErrorKind {
   PlatformError,
   PlatformUnimplemented,
   IoEnded,
+  IoStalled,
 };
 
 class Error {
