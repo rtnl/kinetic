@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: install clang
         run: |
@@ -23,7 +23,7 @@ jobs:
           ./build/build.sh
 
       - name: upload test
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: libkinetic_test
           path: ./build/kinetic_test
