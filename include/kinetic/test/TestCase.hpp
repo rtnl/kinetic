@@ -24,5 +24,5 @@ inline void _CLASS::run(const TestContext & ctx)
 #if defined(KINETIC_TEST)
 #define KineticTestCase(_KEY) __KineticTestCase(_KEY, KINETIC_CONCAT(__KineticTestCase_C, _KEY), KINETIC_CONCAT(__KineticTestCase_F, __COUNTER__))
 #else
-#define KineticTestCase(_KEY) static void KINETIC_CONCAT(__KineticTestCase_F, __COUNTER__)()
+#define KineticTestCase(_KEY) static void KINETIC_CONCAT(__KineticTestCase_F, __COUNTER__)(const KINETIC_NAMESPACE::TestContext & ctx)
 #endif

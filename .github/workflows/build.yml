@@ -22,6 +22,10 @@ jobs:
         run: |
           ./build/build.sh
 
+      - name: run test script
+        run: |
+          ./build/run_test.sh
+
       - name: upload test
         uses: actions/upload-artifact@v7
         with:
