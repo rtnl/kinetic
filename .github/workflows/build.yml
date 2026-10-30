@@ -1,0 +1,29 @@
+name: build clang linux
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: install clang
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang
+
+      - name: build script
+        run: |
+          ./build/build.sh
+
+      - name: upload test
+        uses: actions/upload-artifact@v4
+        with:
+          name: libkinetic_test
+          path: ./build/kinetic_test
