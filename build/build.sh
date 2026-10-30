@@ -13,6 +13,7 @@ clang++                   \
   -I ./include            \
   -I ./test               \
   -DKINETIC_FEATURE_JSON  \
+  -DKINETIC_TEST          \
   -DKINETIC_TEST_LIB      \
   -o ./build/kinetic_test \
   ./src/main.cpp
