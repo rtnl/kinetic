@@ -5,6 +5,7 @@
 namespace KINETIC_NAMESPACE {
 
 enum class ErrorKind {
+  SourceTodo,
   ValueNone,
   ValueUnavailable,
   ValueIncorrect,

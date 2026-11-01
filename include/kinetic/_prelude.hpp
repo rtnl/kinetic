@@ -19,6 +19,7 @@
 #include <memory>
 #include <stdexcept>
 #include <iostream>
+#include <type_traits>
 
 #include <sys/types.h>
 
