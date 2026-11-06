@@ -1,4 +1,6 @@
 #pragma once
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wshift-count-overflow"
 
 #include "../_prelude.hpp"
 #include "../io/Stream.hpp"
@@ -96,6 +98,7 @@ Result<Unit> BinaryStream<ByteOrder::BigEndian>::write_uint(A value) noexcept {
 
   for (usize x = 0; x < sizeof(A); x++) {
     buf[sizeof(A) - 1 - x] = static_cast<u8>(value & 0xFFu);
+
     value >>= 8;
   }
 
@@ -170,3 +173,5 @@ Result<A> BinaryStream<ByteOrder::LittleEndian>::read_uint() noexcept {
 }
 
 }
+
+#pragma GCC diagnostic pop
