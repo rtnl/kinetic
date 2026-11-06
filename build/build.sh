@@ -2,6 +2,7 @@
 set -e
 
 clang++                   \
+  -std=c++11              \
   -g                      \
   -I ./include            \
   -DKINETIC_FEATURE_JSON  \
@@ -9,6 +10,7 @@ clang++                   \
   ./src/main.cpp
 
 clang++                   \
+  -std=c++11              \
   -g                      \
   -I ./include            \
   -I ./test               \
