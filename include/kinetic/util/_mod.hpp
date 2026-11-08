@@ -5,3 +5,4 @@
 #include "./Option.hpp"
 #include "./Error.hpp"
 #include "./Result.hpp"
+#include "./Linear.hpp"
