@@ -2,6 +2,16 @@
 
 #define KINETIC_NAMESPACE kinetic
 
+#if defined(__linux__)
+  #define PLATFORM_FLAG_LINUX
+  #define PLATFORM_FLAG_NIX
+#elif defined(__unix__)
+  #define PLATFORM_FLAG_UNIX
+  #define PLATFORM_FLAG_NIX
+#elif defined(_WIN32) || defined(_WIN64)
+  #define PLATFORM_FLAG_WINDOWS
+#endif
+
 #include <cstdint>
 #include <cassert>
 #include <cstring>
