@@ -9,6 +9,9 @@ namespace KINETIC_NAMESPACE {
 class Stream
   : public Read
   , public Write
-{};
+{
+public:
+  ~Stream() override = default;
+};
 
 }

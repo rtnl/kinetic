@@ -13,7 +13,7 @@ class Read {
 public:
   virtual ~Read() = default;
 
-  virtual Result<usize> read(u8 * into, const usize size) = 0;
+  virtual Result<usize> read(u8 * into, const usize limit) = 0;
 
   Result<usize> read_to_end(std::vector<u8> & into) {
     usize size = 0;
