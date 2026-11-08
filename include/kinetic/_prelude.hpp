@@ -31,7 +31,12 @@
 #include <iostream>
 #include <type_traits>
 
+#include <unistd.h>
 #include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
 
 using u8  = uint8_t;
 using u16 = uint16_t;
