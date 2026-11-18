@@ -1,10 +1,7 @@
 #pragma once
 
 #include "../../_prelude.hpp"
-#include "../../io/Socket.hpp"
-#include "kinetic/util/Error.hpp"
-#include <netinet/in.h>
-#include <sys/socket.h>
+#include "./TcpStream.hpp"
 
 namespace KINETIC_NAMESPACE {
 
@@ -63,7 +60,7 @@ public:
     _fd = -1;
   }
 
-  Result<std::shared_ptr<Socket>> try_accept() {
+  Result<std::shared_ptr<TcpStream>> try_accept() {
     sockaddr_in client_addr{};
     socklen_t client_addr_len = sizeof(client_addr);
     const auto client_fd = ::accept(_fd, reinterpret_cast<sockaddr *>(&client_addr), &client_addr_len);
@@ -82,10 +79,10 @@ public:
     // inet_ntop(AF_INET, &client_addr.sin_addr, client_ip_c, INET_ADDRSTRLEN);
     // std::string client_ip = std::string(client_ip_c) + ":" + std::to_string(client_addr.sin_port);
 
-    return {std::make_shared<Socket>(client_fd)};
+    return {std::make_shared<TcpStream>(client_fd)};
   }
 
-  Result<std::shared_ptr<Socket>> accept() {
+  Result<std::shared_ptr<TcpStream>> accept() {
     for (;;) {
       const auto r = try_accept();
 
