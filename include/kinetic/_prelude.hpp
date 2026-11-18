@@ -16,6 +16,7 @@
 #include <cassert>
 #include <cstring>
 #include <new>
+#include <atomic>
 #include <algorithm>
 #include <string>
 #include <array>
@@ -26,10 +27,13 @@
 #include <functional>
 #include <thread>
 #include <mutex>
+#include <condition_variable>
 #include <memory>
 #include <stdexcept>
 #include <iostream>
+#include <sstream>
 #include <type_traits>
+#include <random>
 
 #include <unistd.h>
 #include <sys/types.h>
