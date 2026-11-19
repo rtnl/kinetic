@@ -1,5 +1,6 @@
 #pragma once
 
+#include "./Pure.hpp"
 #include "./Unit.hpp"
 #include "./Either.hpp"
 #include "./Option.hpp"
