@@ -44,7 +44,7 @@ public:
 
   const A & unwrap() const {
     if (is_err()) {
-      throw std::runtime_error("Result is error");
+      throw std::runtime_error("Result is error msg=[" + get_error().get_message() + "]");
     }
 
     return _inner.get_l();
